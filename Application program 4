@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+struct Road {
+    int source, destination, distance;
+};
+
+void bellmanFord(int cities, int roads, int source, struct Road roadList[], int distances[]) {
+
+    for (int i = 0; i < cities; ++i) {
+        distances[i] = INT_MAX;
+    }
+    distances[source] = 0;
+
+    for (int i = 1; i <= cities - 1; ++i) {
+        for (int j = 0; j < roads; ++j) {
+            int u = roadList[j].source;
+            int v = roadList[j].destination;
+            int weight = roadList[j].distance;
+            if (distances[u] != INT_MAX && distances[u] + weight < distances[v]) {
+                distances[v] = distances[u] + weight;
+            }
+        }
+    }
+}
+
+int main() {
+    int cities, roads, source;
+    printf("Enter the number of cities: ");
+    scanf("%d", &cities);
+    printf("Enter the number of roads: ");
+    scanf("%d", &roads);
+
+    struct Road roadList[roads];
+    printf("Enter the roads:\n");
+    for (int i = 0; i < roads; ++i) {
+        scanf("%d %d %d", &roadList[i].source, &roadList[i].destination, &roadList[i].distance);
+    }
+
+    printf("Enter the source city: ");
+    scanf("%d", &source);
+
+    int distances[cities];
+    bellmanFord(cities, roads, source, roadList, distances);
+
+    printf("Shortest distances from city %d to all other cities:\n", source);
+    for (int i = 0; i < cities; ++i) {
+        if (distances[i] == INT_MAX) {
+            printf("City %d is not reachable from the source.\n", i);
+        } else {
+            printf("Distance to city %d: %d\n", i, distances[i]);
+        }
+    }
+
+    return 0;
+}
