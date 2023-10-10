@@ -1,0 +1,59 @@
+Application 7
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+
+int x[100]; // Global array to store the positions of queens
+
+bool Place(int k, int i) {
+    for (int j = 1; j <= k - 1; j++) {
+        if (x[j] == i || abs(x[j]) - i == abs(j - k)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void PrintSolution(int n) {
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (x[i] == j) {
+                printf("Q ");
+            } else {
+                printf(". ");
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void NQueens(int k, int n) {
+    for (int i = 1; i <= n; i++) {
+        if (Place(k, i)) {
+            x[k] = i;
+            if (k == n) {
+                // All queens have been placed, print the solution
+                PrintSolution(n);
+            } else {
+                // Continue to the next row
+                NQueens(k + 1, n);
+            }
+        }
+    }
+}
+
+int main() {
+    int n;
+    printf("Enter the value of N: ");
+    scanf("%d", &n);
+
+    if (n <= 0 || n >= 100) {
+        printf("Invalid input. N should be a positive integer less than 100.\n");
+        return 1;
+    }
+
+    NQueens(1, n);
+    return 0;
+}
