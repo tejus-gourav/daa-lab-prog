@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#include <limits.h>
+
+#define V 6
+#define min(a, b) ((a < b) ? a : b)
+
+bool bfs(int graph[V][V], int parent[], int src, int sink) {
+    bool visited[V];
+    memset(visited, 0, sizeof(visited));
+
+    visited[src] = true;
+    parent[src] = -1;
+
+    int queue[V], front = 0, rear = 0;
+    queue[rear++] = src;
+
+    while (front < rear) {
+        int u = queue[front++];
+        for (int v = 0; v < V; v++) {
+            if (!visited[v] && graph[u][v] > 0) {
+                visited[v] = true;
+                parent[v] = u;
+                queue[rear++] = v;
+            }
+        }
+    }
+
+    return visited[sink];
+}
+
+int fordFulkerson(int graph[V][V], int src, int sink) {
+    int parent[V], maxFlow = 0;
+
+    while (bfs(graph, parent, src, sink)) {
+        int pathFlow = INT_MAX;
+        for (int v = sink; v != src; v = parent[v]) {
+            int u = parent[v];
+            pathFlow = min(pathFlow, graph[u][v]);
+        }
+
+        for (int v = sink; v != src; v = parent[v]) {
+            int u = parent[v];
+            graph[u][v] -= pathFlow;
+            graph[v][u] += pathFlow;
+        }
+
+        maxFlow += pathFlow;
+    }
+
+    return maxFlow;
+}
+
+int main() {
+    int graph[V][V] = {
+        {0, 16, 13, 0, 0, 0},
+        {0, 0, 10, 12, 0, 0},
+        {0, 4, 0, 0, 14, 0},
+        {0, 0, 9, 0, 0, 20},
+        {0, 0, 0, 7, 0, 4},
+        {0, 0, 0, 0, 0, 0}
+    };
+
+    int src = 0;
+    int sink = 5;
+    int maxFlow = fordFulkerson(graph, src, sink);
+
+    printf("Maximum Flow from Source to Sink: %d\n", maxFlow);
+
+    return 0;
+}
